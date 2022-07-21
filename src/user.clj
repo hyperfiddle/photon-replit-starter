@@ -7,11 +7,11 @@
 (def port 8080)
 
 (defn main [{:keys [mode]}]
+  (def server (start-server! {:host host, :port port}))
   (if (= :single-run mode)
     (shadow/compile :app)
     (do (shadow-server/start!)
         (shadow/watch :app)))
-  (def server (start-server! {:host host, :port port}))
   (println (str "\n👉 App available at http://" host ":" (-> server (.getConnectors) first (.getPort))
              "\n")))
 

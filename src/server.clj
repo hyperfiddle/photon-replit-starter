@@ -28,7 +28,7 @@
 (defn start-server! [config]
   (try
     (ring/run-jetty (-> default-handler
-                      (wrap-file "resources/public")
+                      (wrap-file "resources")
                       (wrap-content-type)
                       (wrap-default-page)
                       #_(wrap-photon))

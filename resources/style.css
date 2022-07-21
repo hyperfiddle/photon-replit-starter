@@ -8,7 +8,6 @@ body{
 input[type="text"]{
     padding: 0.5rem;
     margin-bottom: 1rem;
-    min-width: 30rem;
     border-radius: 0.25rem;
     border: 1px gray solid;
 }
@@ -39,6 +38,7 @@ label::first-letter{
 .todo-list{
     display:grid;
     grid-template-rows: auto fit-content auto;
+    min-width: 8rem;
     max-width: 30rem;
 }
 

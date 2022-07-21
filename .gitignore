@@ -1,5 +1,5 @@
 node_modules
-resources/public/js
+resources/js
 .cpcache
 .shadow-cljs
 .nrepl-port

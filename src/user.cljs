@@ -1,17 +1,15 @@
 (ns user
-  (:require [app.core]
+  (:require [app]
             [hyperfiddle.photon :as p]
             [hyperfiddle.photon-dom :as dom])
-  (:import [hyperfiddle.photon Pending]
-           [missionary Cancelled]))
+  (:import [hyperfiddle.photon Pending]))
 
 (p/defn App []
   (binding [dom/node (dom/by-id "root")]
-    (p/remote (app.core/Todo-list.))))
+    (p/remote (app/Todo-list.))))
 
 (def main (p/client (p/main (try (App.)
-                                 (catch Pending _)
-                                 (catch Cancelled _)))))
+                                 (catch Pending _)))))
 (def reactor)
 (defn ^:dev/after-load start! [] (set! reactor (main js/console.log js/console.error)))
 ;; TODO: keep seeing `missionary.Cancelled {message: 'Watch cancelled.'}` on the js console
