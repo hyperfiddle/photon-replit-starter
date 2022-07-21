@@ -9,4 +9,5 @@
                                :watch-dir       "resources"
                                :hud             false
                                :ignore-warnings true}}}
- :nrepl    {:port 9001}}
+ :http {:host "localhost"} ; prevent shadow server from hijacking HTTP port
+ }
