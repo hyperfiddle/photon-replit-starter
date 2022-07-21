@@ -8,10 +8,10 @@
 
 (defn main [{:keys [mode]}]
   (def server (start-server! {:host host, :port port, :resources-path "resources"}))
-  (if (= :single-run mode)
-    (shadow/compile :app)
-    (do (shadow-server/start!)
-        (shadow/watch :app)))
+  (shadow/compile :app)
+  (do (shadow-server/start!)
+      (shadow/watch :app))
+ 
   (println (str "\n👉 App available at http://" host ":" (-> server (.getConnectors) first (.getPort))
              "\n")))
 
