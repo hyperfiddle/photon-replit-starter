@@ -16,21 +16,21 @@
                                       (let [dom-node (:target js-event)
                                             value    (:value dom-node)]
                                         (dom/oset! dom-node :value "")
-                                        (p/remote (do (d/transact! !conn [{:task/description value
-                                                                           :task/status      :active}]) nil)))))]}))
+                                        (p/remote (d/transact! !conn [{:task/description value
+                                                                       :task/status      :active}]) nil))))]}))
 
 (p/defn TodoItem [e]
   (let [id          (:db/id e)
         status      (:task/status e)]
     (p/remote
-      (do (ui/checkbox {:dom/id          id
-                        :dom/checked     (case status :active false, :done true)
-                        ::ui/input-event (p/fn [js-event]
-                                           (when js-event
-                                             (let [done? (-> js-event :target :checked)]
-                                               (p/remote (do (d/transact! !conn [{:db/id       (p/deduping id)
-                                                                                  :task/status (if done? :done :active)}]) nil)))))})
-          (dom/label {:dom/for id} (dom/text (str (p/remote (:task/description e)))))))))
+      (ui/checkbox {:dom/id          id
+                    :dom/checked     (case status :active false, :done true)
+                    ::ui/input-event (p/fn [js-event]
+                                       (when js-event
+                                         (let [done? (-> js-event :target :checked)]
+                                           (p/remote (d/transact! !conn [{:db/id       (p/deduping id)
+                                                                          :task/status (if done? :done :active)}]) nil))))})
+      (dom/label {:dom/for id} (dom/text (str (p/remote (:task/description e))))))))
 
 (defn todo-count [db]
   #?(:clj (count (d/q '[:find [?e ...] :in $ ?status :where [?e :task/status ?status]] db :active))))
@@ -38,20 +38,20 @@
 (p/defn Todo-list []
   (let [db (p/watch !conn)]
     (p/remote
-      (do (Readme.)
-          (dom/div {:dom/class "todo-list"}
-            (TodoCreate.)
-            (dom/div {:dom/class "todo-items"}
-              (p/for [id (p/remote (d/q '[:find [?e ...] :in $ :where [?e :task/status]] db))]
-                (p/remote (TodoItem. (d/entity db id) id))))
-            (dom/p {:dom/class "counter"}
-              (dom/span {:dom/class "count"} (dom/text (p/remote (todo-count db))))
-              (dom/text " items left")))))))
+      (Readme.)
+      (dom/div {:dom/class "todo-list"}
+        (TodoCreate.)
+        (dom/div {:dom/class "todo-items"}
+          (p/for [id (p/remote (d/q '[:find [?e ...] :in $ :where [?e :task/status]] db))]
+            (p/remote (TodoItem. (d/entity db id) id))))
+        (dom/p {:dom/class "counter"}
+          (dom/span {:dom/class "count"} (dom/text (p/remote (todo-count db))))
+          (dom/text " items left"))))))
 
 (p/defn Readme []
-        (dom/h1 (dom/text "Multiplayer todo list in one file"))
-          (dom/ul
-            (dom/li (dom/text "Full stack webapp in one file"))
-            (dom/li (dom/text "Server side database"))
-            (dom/li (dom/text "Rich client rendering"))
-            (dom/li (dom/text "Collaborative — try multiple tabs"))))
+  (dom/h1 (dom/text "Multiplayer todo list in one file"))
+  (dom/ul
+    (dom/li (dom/text "Full stack webapp in one file"))
+    (dom/li (dom/text "Server side database"))
+    (dom/li (dom/text "Rich client rendering"))
+    (dom/li (dom/text "Collaborative — try multiple tabs"))))
