@@ -13,12 +13,3 @@
  
   (println (str "\n👉 App available at http://" host ":" (-> server (.getConnectors) first (.getPort))
              "\n")))
-
-(comment
-  (.stop server)
-  )
-
-(comment
-  "Photon REPL entrypoint"
-  (main {})
-  )
