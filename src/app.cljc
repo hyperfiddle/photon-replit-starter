@@ -1,5 +1,5 @@
 (ns app
-  (:require #?(:clj [datascript.core :as d])
+  (:require [datascript.core :as d]
             [hyperfiddle.photon :as p]
             [hyperfiddle.photon-dom :as dom]
             [hyperfiddle.photon-ui :as ui])
@@ -8,28 +8,26 @@
 (defonce !conn #?(:clj (d/create-conn {}) :cljs nil))
 
 (p/defn TodoCreate []
-  (ui/input {:dom/placeholder    "Buy milk"
-             :dom/type           "text"
-             ::ui/keychord-event [#{"enter"}
-                                  (p/fn [js-event]
-                                    (when js-event
-                                      (let [v (:value dom/node)]
-                                        (dom/oset! dom/node :value "")
-                                        (p/server (d/transact! !conn [{:task/description v
-                                                                       :task/status      :active}]) nil))))]}))
+  (ui/input {::dom/placeholder    "Buy milk"
+             ::dom/type           "text"
+             ::ui/keychords      #{"enter"}
+             ::ui/keychord-event (p/fn [js-event]
+                                    (let [v (:value dom/node)]
+                                      (p/server (d/transact! !conn [{:task/description v
+                                                                     :task/status      :active}]) nil))
+                                    (dom/oset! dom/node :value ""))}))
 
 (p/defn TodoItem [e]
   (let [id          (:db/id e)
         status      (:task/status e)]
     (p/client
-      (ui/checkbox {:dom/id          id
-                    :dom/checked     (case status :active false, :done true)
+      (ui/checkbox {::dom/id          id
+                    ::dom/checked     (case status :active false, :done true)
                     ::ui/input-event (p/fn [js-event]
-                                       (when js-event
-                                         (let [done? (-> js-event :target :checked)]
-                                           (p/server (d/transact! !conn [{:db/id       (p/deduping id)
-                                                                          :task/status (if done? :done :active)}]) nil))))})
-      (dom/label {:dom/for id} (dom/text (str (p/server (:task/description e))))))))
+                                       (let [done? (:checked dom/node)]
+                                          (p/server (d/transact! !conn [{:db/id       (p/deduping id)
+                                                                          :task/status (if done? :done :active)}]) nil)))})
+      (dom/label {:for id} (dom/text (str (p/server (:task/description e))))))))
 
 (defn todo-count [db]
   #?(:clj (count (d/q '[:find [?e ...] :in $ ?status :where [?e :task/status ?status]] db :active))))
